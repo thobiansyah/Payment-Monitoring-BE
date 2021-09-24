@@ -8,3 +8,9 @@ type Role struct {
 	ID   uint   `gorm:"not null"`
 	Name string `gorm:"not null"`
 }
+
+//response
+type RoleResponse struct {
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
+}

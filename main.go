@@ -3,6 +3,7 @@ package main
 import (
 	"backend-c-payment-monitoring/config"
 	"backend-c-payment-monitoring/handler"
+	"backend-c-payment-monitoring/middleware"
 	"backend-c-payment-monitoring/model"
 	"fmt"
 	"net/http"
@@ -27,6 +28,8 @@ func setupRoutes(app *fiber.App) {
 	api := app.Group("/api/v1")
 
 	api.Post("/login", handler.LoginHandler)
+
+	api.Get("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetAllUser)
 
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(http.StatusNotFound).JSON(model.ApiResponse{
