@@ -17,8 +17,25 @@ type User struct {
 
 //response
 type UserResponse struct {
-	ID       uint   `json:"id"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Role     Role   `json:"role"`
+	ID       uint         `json:"id"`
+	Name     string       `json:"name"`
+	Username string       `json:"username"`
+	Role     RoleResponse `json:"role"`
+}
+
+func FormatGetAllUserResponse(users []User) []UserResponse {
+	usersFormatter := []UserResponse{}
+
+	for _, user := range users {
+		userFormatter := UserResponse{}
+		userFormatter.ID = user.ID
+		userFormatter.Name = user.Name
+		userFormatter.Username = user.Username
+		userFormatter.Role.ID = user.Role.ID
+		userFormatter.Role.Name = user.Role.Name
+
+		usersFormatter = append(usersFormatter, userFormatter)
+	}
+
+	return usersFormatter
 }
