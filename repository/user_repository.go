@@ -41,3 +41,28 @@ func FindUserByUsername(username string) (model.User, error) {
 
 	return user, nil
 }
+
+func FindUserById(id int) (model.User, error) {
+
+	configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
+
+	var user model.User
+	err := db.Preload("Role").Where("id = ?", id).First(&user).Error
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func SaveUser(user model.User) (model.User, error) {
+
+	configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
+
+	db.Save(&user)
+
+	return user, nil
+}
