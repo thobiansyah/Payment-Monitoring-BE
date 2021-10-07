@@ -16,6 +16,7 @@ func GetAllUser(pagination model.Pagination) (model.Pagination, error) {
 	return users, err
 }
 
+
 func DeleteUser(id int) bool {
 
 	_, err := repository.DeleteUser(id)
@@ -25,5 +26,14 @@ func DeleteUser(id int) bool {
 	}
 
 	return true
+}
 
+func CreateUser(user model.User) (model.User, error) {
+	inserted, err := repository.CreateUser(user)
+
+	if err != nil {
+		return model.User{}, err
+	}
+
+	return inserted, nil
 }

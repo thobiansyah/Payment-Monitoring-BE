@@ -71,12 +71,40 @@ func DeleteUser(c *fiber.Ctx) error {
 			Message: "Delete Data Failed",
 			Error:   exception.NewString("Delete Failed / Record Not Found"),
 			Data:    false,
-		})
-	}
-	return c.Status(http.StatusOK).JSON(model.ApiResponse{
+    })
+  }
+  return c.Status(http.StatusOK).JSON(model.ApiResponse{
 		Code:    http.StatusOK,
 		Message: "Delete Data Success",
 		Error:   nil,
 		Data:    responses,
+	})
+}
+
+func CreateUser(c *fiber.Ctx) error {
+	payload := new(model.User)
+
+	err := c.BodyParser(payload)
+
+	if err != nil {
+		return err
+	}
+
+	user, errorInsert := service.CreateUser(*payload)
+	if errorInsert != nil {
+		//error
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Create Data Failed",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+
+		})
+	}
+	return c.Status(http.StatusOK).JSON(model.ApiResponse{
+		Code:    http.StatusOK,
+		Message: "Create Data Success",
+		Error:   nil,
+		Data:    model.User(user),
 	})
 }
