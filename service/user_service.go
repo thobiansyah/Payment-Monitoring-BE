@@ -15,3 +15,15 @@ func GetAllUser(pagination model.Pagination) (model.Pagination, error) {
 
 	return users, err
 }
+
+func DeleteUser(id int) bool {
+
+	_, err := repository.DeleteUser(id)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+
+}

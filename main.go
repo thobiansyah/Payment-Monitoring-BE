@@ -30,6 +30,7 @@ func setupRoutes(app *fiber.App) {
 	api.Post("/login", handler.LoginHandler)
 
 	api.Get("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetAllUser)
+	api.Delete("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.DeleteUser)
 
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(http.StatusNotFound).JSON(model.ApiResponse{

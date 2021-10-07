@@ -57,3 +57,26 @@ func GetAllUser(c *fiber.Ctx) error {
 		Data:    model.Pagination(responses),
 	})
 }
+
+func DeleteUser(c *fiber.Ctx) error {
+
+	id, _ := c.ParamsInt("id")
+
+	responses := service.DeleteUser(id)
+
+	if responses != true {
+		//error
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Delete Data Failed",
+			Error:   exception.NewString("Delete Failed / Record Not Found"),
+			Data:    false,
+		})
+	}
+	return c.Status(http.StatusOK).JSON(model.ApiResponse{
+		Code:    http.StatusOK,
+		Message: "Delete Data Success",
+		Error:   nil,
+		Data:    responses,
+	})
+}
