@@ -30,6 +30,8 @@ func setupRoutes(app *fiber.App) {
 	api.Post("/login", handler.LoginHandler)
 
 	api.Get("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetAllUser)
+	api.Post("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.CreateUser)
+	api.Delete("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.DeleteUser)
 
 	api.Get("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetUserById)
 
