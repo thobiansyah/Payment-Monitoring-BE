@@ -11,6 +11,7 @@ func FindAllUser(pagination model.Pagination) (model.Pagination, error) {
 	db := config.NewMysqlDatabase(configuration)
 
 	var users []model.User
+
 	keyword := "%" + pagination.Keyword + "%"
 	err := db.
 		Preload("Role").
@@ -33,8 +34,7 @@ func FindUserById(id int) (model.User, error) {
 
 	var user model.User
 
-	err := db.First(&user, id).Error
-
+	err := db.Preload("Role").First(&user, id).Error
 	if err != nil {
 		return user, err
 	}
@@ -47,22 +47,20 @@ func FindUserByUsername(username string) (model.User, error) {
 	db := config.NewMysqlDatabase(configuration)
 
 	var user model.User
-	err := db.Preload("Role").Where("username = ?", username).First(&user).Error
 
+	err := db.Preload("Role").Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return user, err
 	}
 
 	return user, nil
 }
-
 
 func CreateUser(user model.User) (model.User, error) {
 	configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
 
 	err := db.Save(&user).Error
-
 	if err != nil {
 		return user, err
 	}
@@ -70,29 +68,28 @@ func CreateUser(user model.User) (model.User, error) {
 	return user, nil
 }
 
-
-func SaveUser(user model.User) (model.User, error) {
-  
-  configuration := config.New()
+func UpdateUser(id int, user model.User) (model.User, error) {
+	configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
-  
-  db.Save(&user)
-  
-  return user, nil
-}
 
-func DeleteUser(id int) (model.User, error) {
-  
-  configuration := config.New()
-	db := config.NewMysqlDatabase(configuration)
-  
-  var user model.User
-
-	err := db.Where("id = ?", id).Delete(&user).Error
-
+	err := db.Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		return user, err
 	}
-  
-  return user, nil
+
+	return user, nil
+}
+
+func DeleteUser(id int) (model.User, error) {
+	configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
+
+	var user model.User
+
+	err := db.Where("id = ?", id).Delete(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }

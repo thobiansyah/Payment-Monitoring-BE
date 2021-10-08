@@ -7,7 +7,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-func UserValidate(request model.User) {
+func UserValidate(request model.CreateUserRequest) {
 	err := validation.ValidateStruct(&request,
 		validation.Field(&request.Name, validation.Required.When(request.Name == "").Error("Name is Required")),
 		validation.Field(&request.Username, validation.Required.When(request.Username == "").Error("Username is Required")),
