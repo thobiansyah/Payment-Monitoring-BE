@@ -15,3 +15,13 @@ func GetAllUser(pagination model.Pagination) (model.Pagination, error) {
 
 	return users, err
 }
+
+func GetUserById(id int) (model.User, error) {
+	user, err := repository.FindUserById(id)
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, err
+}

@@ -31,6 +31,8 @@ func setupRoutes(app *fiber.App) {
 
 	api.Get("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetAllUser)
 
+	api.Get("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetUserById)
+
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(http.StatusNotFound).JSON(model.ApiResponse{
 			Code:  http.StatusNotFound,
