@@ -3,6 +3,9 @@ package service
 import (
 	"backend-c-payment-monitoring/model"
 	"backend-c-payment-monitoring/repository"
+	"errors"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func GetAllUser(pagination model.Pagination) (model.Pagination, error) {
@@ -16,7 +19,23 @@ func GetAllUser(pagination model.Pagination) (model.Pagination, error) {
 	return users, err
 }
 
-func CreateUser(user model.User) (model.User, error) {
+func CreateUser(payload model.User) (model.User, error) {
+	//check username
+	username, err := repository.FindUserByUsername(payload.Username)
+
+	if err == nil {
+		return username, errors.New("Username already exist")
+	}
+
+	passwordHash, _ := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
+
+	var user = model.User{
+		Name:     payload.Name,
+		Username: payload.Username,
+		Password: string(passwordHash),
+		RoleID:   payload.RoleID,
+	}
+
 	inserted, err := repository.CreateUser(user)
 
 	if err != nil {

@@ -3,8 +3,6 @@ package repository
 import (
 	"backend-c-payment-monitoring/config"
 	"backend-c-payment-monitoring/model"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 func FindAllUser(pagination model.Pagination) (model.Pagination, error) {
@@ -45,7 +43,6 @@ func FindUserById(id int) (model.User, error) {
 }
 
 func FindUserByUsername(username string) (model.User, error) {
-
 	configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
 
@@ -59,18 +56,9 @@ func FindUserByUsername(username string) (model.User, error) {
 	return user, nil
 }
 
-func CreateUser(payload model.User) (model.User, error) {
+func CreateUser(user model.User) (model.User, error) {
 	configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
-
-	passwordHash, _ := bcrypt.GenerateFromPassword([]byte(payload.Password), bcrypt.DefaultCost)
-
-	var user = model.User{
-		Name:     payload.Name,
-		Username: payload.Username,
-		Password: string(passwordHash),
-		RoleID:   payload.RoleID,
-	}
 
 	err := db.Save(&user).Error
 
