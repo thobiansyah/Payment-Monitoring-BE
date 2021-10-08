@@ -44,3 +44,20 @@ func CreateUser(payload model.User) (model.User, error) {
 
 	return inserted, nil
 }
+
+func DeleteUser(id int) bool {
+	//check availability
+	_, err := repository.FindUserById(id)
+
+	if err != nil {
+		return false
+	}
+
+	_, err = repository.DeleteUser(id)
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}

@@ -7,13 +7,16 @@ import (
 )
 
 type Pagination struct {
+	Code       int         `json:"code"`
+	Message    string      `json:"message"`
+	Error      *string     `json:"error"`
 	Limit      int         `json:"limit,omitempty;query:limit"`
 	Page       int         `json:"page,omitempty;query:page"`
 	Sort       string      `json:"sort,omitempty;query:sort"`
 	Keyword    string      `json:"keyword"`
 	TotalRows  int64       `json:"total_rows"`
 	TotalPages int         `json:"total_pages"`
-	Rows       interface{} `json:"rows"`
+	Data       interface{} `json:"data"`
 }
 
 func (p *Pagination) GetOffset() int {

@@ -22,9 +22,24 @@ func FindAllUser(pagination model.Pagination) (model.Pagination, error) {
 		return pagination, err
 	}
 
-	pagination.Rows = model.FormatGetAllUserResponse(users)
+	pagination.Data = model.FormatGetAllUserResponse(users)
 
 	return pagination, nil
+}
+
+func FindUserById(id int) (model.User, error) {
+	configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
+
+	var user model.User
+
+	err := db.First(&user, id).Error
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }
 
 func FindUserByUsername(username string) (model.User, error) {
@@ -46,6 +61,23 @@ func CreateUser(user model.User) (model.User, error) {
 	db := config.NewMysqlDatabase(configuration)
 
 	err := db.Save(&user).Error
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func DeleteUser(id int) (model.User, error) {
+
+	configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
+
+	var user model.User
+
+	err := db.Where("id = ?", id).Delete(&user).Error
+
 	if err != nil {
 		return user, err
 	}
