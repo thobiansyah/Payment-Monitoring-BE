@@ -66,21 +66,65 @@ func GetAllUser(c *fiber.Ctx) error {
 	})
 }
 
-func CreateUser(c *fiber.Ctx) error {
-	payload := new(model.User)
+func GetUserById(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Something Wrong",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
+	}
 
-	err := c.BodyParser(payload)
+	responses, err := service.GetUserById(id)
 
 	if err != nil {
-		return err
+		//error
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Get Data Failed",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
+	}
+	return c.Status(http.StatusOK).JSON(model.ApiResponse{
+		Code:    http.StatusOK,
+		Message: "Get Data Success",
+		Error:   nil,
+		Data:    model.FormatGetUserResponse(responses),
+	})
+}
+
+func CreateUser(c *fiber.Ctx) error {
+	var payload model.CreateUserRequest
+
+	err := c.BodyParser(&payload)
+
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Something Wrong",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
 	}
 
 	//validation
-	validation.UserValidate(*payload)
+	validation.UserValidate(payload)
 
-	user, errorInsert := service.CreateUser(*payload)
-	if errorInsert != nil {
+	responses, err := service.CreateUser(payload)
+
+	if err != nil {
 		//error
+		if err.Error() == "unique" {
+			return c.Status(http.StatusUnprocessableEntity).JSON(model.ApiResponse{
+				Code:    http.StatusUnprocessableEntity,
+				Message: "Something Wrong",
+				Error:   exception.NewString("username: Username Available"),
+				Data:    nil,
+			})
+		}
 		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
 			Code:    http.StatusBadRequest,
 			Message: "Create Data Failed",
@@ -93,7 +137,63 @@ func CreateUser(c *fiber.Ctx) error {
 		Code:    http.StatusOK,
 		Message: "Create Data Success",
 		Error:   nil,
-		Data:    model.User(user),
+		Data:    model.FormatCreateUserResponse(responses),
+	})
+}
+
+func UpdateUser(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	if err != nil {
+		return c.Status(http.StatusNotFound).JSON(model.ApiResponse{
+			Code:    http.StatusNotFound,
+			Message: "Something Wrong",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
+	}
+
+	var payload model.CreateUserRequest
+	err = c.BodyParser(&payload)
+
+	//validation
+	validation.UserValidate(payload)
+
+	if err != nil {
+		//error
+		return c.Status(http.StatusNotFound).JSON(model.ApiResponse{
+			Code:    http.StatusNotFound,
+			Message: "Something Wrong",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
+	}
+
+	responses, err := service.UpdateUser(id, payload)
+
+	if err != nil {
+		//error
+		if err.Error() == "unique" {
+			return c.Status(http.StatusUnprocessableEntity).JSON(model.ApiResponse{
+				Code:    http.StatusUnprocessableEntity,
+				Message: "Something Wrong",
+				Error:   exception.NewString("username: Username Available"),
+				Data:    nil,
+			})
+		}
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Update Data Failed",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
+	}
+
+	return c.Status(http.StatusOK).JSON(model.ApiResponse{
+		Code:    http.StatusOK,
+		Message: "Update Data Success",
+		Error:   nil,
+		Data:    model.FormatCreateUserResponse(responses),
 	})
 }
 
@@ -127,60 +227,5 @@ func DeleteUser(c *fiber.Ctx) error {
 		Message: "Delete Data Success",
 		Error:   nil,
 		Data:    responses,
-	})
-}
-
-func GetUserById(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
-			Code:    http.StatusBadRequest,
-			Message: "Something Wrong",
-			Error:   exception.NewString(err.Error()),
-			Data:    nil,
-		})
-	}
-
-	responses, err := service.GetUserById(id)
-
-	if err != nil {
-		//error
-		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
-			Code:    http.StatusBadRequest,
-			Message: "Get Data Failed",
-			Error:   exception.NewString(err.Error()),
-			Data:    nil,
-		})
-	}
-	return c.Status(http.StatusOK).JSON(model.ApiResponse{
-		Code:    http.StatusOK,
-		Message: "Get Data Success",
-		Error:   nil,
-		Data:    responses,
-	})
-
-}
-
-func UpdateUser(ctx *fiber.Ctx) error {
-	id, errParseId := strconv.Atoi(ctx.Params("id"))
-	if errParseId != nil {
-		return errParseId
-	}
-
-	payload := new(model.User)
-
-	err := ctx.BodyParser(payload)
-
-	if err != nil {
-		return err
-	}
-
-	result, errUpdate := service.UpdateUser(id, *payload)
-	if errUpdate != nil {
-		return errUpdate
-	}
-
-	return ctx.JSON(fiber.Map{
-		"updated_record": result,
 	})
 }
