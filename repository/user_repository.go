@@ -56,6 +56,7 @@ func FindUserByUsername(username string) (model.User, error) {
 	return user, nil
 }
 
+
 func CreateUser(user model.User) (model.User, error) {
 	configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
@@ -69,18 +70,29 @@ func CreateUser(user model.User) (model.User, error) {
 	return user, nil
 }
 
-func DeleteUser(id int) (model.User, error) {
 
-	configuration := config.New()
+func SaveUser(user model.User) (model.User, error) {
+  
+  configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
+  
+  db.Save(&user)
+  
+  return user, nil
+}
 
-	var user model.User
+func DeleteUser(id int) (model.User, error) {
+  
+  configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
+  
+  var user model.User
 
 	err := db.Where("id = ?", id).Delete(&user).Error
 
 	if err != nil {
 		return user, err
 	}
-
-	return user, nil
+  
+  return user, nil
 }

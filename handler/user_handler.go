@@ -160,3 +160,27 @@ func GetUserById(c *fiber.Ctx) error {
 	})
 
 }
+
+func UpdateUser(ctx *fiber.Ctx) error {
+	id, errParseId := strconv.Atoi(ctx.Params("id"))
+	if errParseId != nil {
+		return errParseId
+	}
+
+	payload := new(model.User)
+
+	err := ctx.BodyParser(payload)
+
+	if err != nil {
+		return err
+	}
+
+	result, errUpdate := service.UpdateUser(id, *payload)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return ctx.JSON(fiber.Map{
+		"updated_record": result,
+	})
+}

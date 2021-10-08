@@ -19,6 +19,30 @@ func GetAllUser(pagination model.Pagination) (model.Pagination, error) {
 	return users, err
 }
 
+
+func UpdateUser(id int, payload model.User) (int, error) {
+
+	user, err := repository.FindUserById(id)
+
+	if err != nil {
+		return id, errors.New("Id Not Found")
+	}
+
+	password, _ := bcrypt.GenerateFromPassword([]byte(payload.Password), 14)
+
+	user.Name = payload.Name
+	user.Username = payload.Username
+	user.Password = string(password)
+	user.RoleID = payload.RoleID
+
+	user, errUpdate := repository.SaveUser(user)
+	if errUpdate != nil {
+		return id, errUpdate
+	}
+
+	return id, nil
+}
+
 func GetUserById(id int) (model.User, error) {
 	user, err := repository.FindUserById(id)
 
