@@ -2,6 +2,7 @@ package handler
 
 import (
 	"backend-c-payment-monitoring/exception"
+	"backend-c-payment-monitoring/exception/validation"
 	"backend-c-payment-monitoring/model"
 	"backend-c-payment-monitoring/service"
 	"net/http"
@@ -66,6 +67,9 @@ func CreateUser(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
+	//validation
+	validation.UserValidate(*payload)
 
 	user, errorInsert := service.CreateUser(*payload)
 	if errorInsert != nil {
