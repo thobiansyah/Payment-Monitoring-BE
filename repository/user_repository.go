@@ -22,13 +22,27 @@ func FindAllUser(pagination model.Pagination) (model.Pagination, error) {
 		return pagination, err
 	}
 
-	pagination.Rows = model.FormatGetAllUserResponse(users)
+	pagination.Data = model.FormatGetAllUserResponse(users)
 
 	return pagination, nil
 }
 
-func FindUserByUsername(username string) (model.User, error) {
+func FindUserById(id int) (model.User, error) {
+	configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
 
+	var user model.User
+
+	err := db.First(&user, id).Error
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func FindUserByUsername(username string) (model.User, error) {
 	configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
 
@@ -42,13 +56,12 @@ func FindUserByUsername(username string) (model.User, error) {
 	return user, nil
 }
 
-func FindUserById(id int) (model.User, error) {
 
+func CreateUser(user model.User) (model.User, error) {
 	configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
 
-	var user model.User
-	err := db.Preload("Role").Where("id = ?", id).First(&user).Error
+	err := db.Save(&user).Error
 
 	if err != nil {
 		return user, err
@@ -57,12 +70,29 @@ func FindUserById(id int) (model.User, error) {
 	return user, nil
 }
 
+
 func SaveUser(user model.User) (model.User, error) {
-
-	configuration := config.New()
+  
+  configuration := config.New()
 	db := config.NewMysqlDatabase(configuration)
+  
+  db.Save(&user)
+  
+  return user, nil
+}
 
-	db.Save(&user)
+func DeleteUser(id int) (model.User, error) {
+  
+  configuration := config.New()
+	db := config.NewMysqlDatabase(configuration)
+  
+  var user model.User
 
-	return user, nil
+	err := db.Where("id = ?", id).Delete(&user).Error
+
+	if err != nil {
+		return user, err
+	}
+  
+  return user, nil
 }
