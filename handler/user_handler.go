@@ -129,3 +129,34 @@ func DeleteUser(c *fiber.Ctx) error {
 		Data:    responses,
 	})
 }
+
+func GetUserById(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Something Wrong",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
+	}
+
+	responses, err := service.GetUserById(id)
+
+	if err != nil {
+		//error
+		return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Get Data Failed",
+			Error:   exception.NewString(err.Error()),
+			Data:    nil,
+		})
+	}
+	return c.Status(http.StatusOK).JSON(model.ApiResponse{
+		Code:    http.StatusOK,
+		Message: "Get Data Success",
+		Error:   nil,
+		Data:    responses,
+	})
+
+}
