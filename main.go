@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
@@ -25,13 +26,19 @@ func main() {
 
 func setupRoutes(app *fiber.App) {
 	app.Use(recover.New())
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
 	api := app.Group("/api/v1")
 
 	api.Post("/login", handler.LoginHandler)
 
 	api.Get("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetAllUser)
-  api.Get("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetUserById)
-  api.Post("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.CreateUser)
+	api.Get("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.GetUserById)
+	api.Post("/users", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.CreateUser)
 	api.Put("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.UpdateUser)
 	api.Delete("/users/:id", middleware.JWTProtected(), middleware.RolePermissionAdmin, handler.DeleteUser)
 
