@@ -6,9 +6,9 @@ import "gorm.io/gorm"
 type User struct {
 	gorm.Model
 	ID       uint   `gorm:"not null"`
-	Name     string `gorm:"not null"`
-	Username string `gorm:"not null"`
-	Password string `gorm:"not null"`
+	Name     string `gorm:"size:255;not null"`
+	Username string `gorm:"size:255;not null"`
+	Password string `gorm:"size:255;not null"`
 	RoleID   uint   `gorm:"not null"`
 	Role     Role
 }

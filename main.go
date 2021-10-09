@@ -15,7 +15,10 @@ import (
 
 func main() {
 	configuration := config.New()
-	config.NewMysqlDatabase(configuration)
+	database := config.NewMysqlDatabase(configuration)
+
+	//migration
+	database.AutoMigrate(&model.Role{}, &model.User{}, &model.Status{}, &model.Payment{})
 
 	app := fiber.New(config.NewFiberConfig())
 	setupRoutes(app)
