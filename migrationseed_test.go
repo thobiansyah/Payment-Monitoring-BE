@@ -14,7 +14,7 @@ func TestMigration(t *testing.T) {
 	configuration := config.New()
 	database := config.NewMysqlDatabase(configuration)
 
-	database.AutoMigrate(&model.Role{}, &model.User{})
+	database.AutoMigrate(&model.Role{}, &model.User{}, &model.Status{}, &model.Payment{})
 }
 
 func TestRoleSeeder(t *testing.T) {
@@ -60,4 +60,26 @@ func TestUserSeeder(t *testing.T) {
 
 	log.Println("User Seed Success")
 
+}
+
+func TestStatusSeeder(t *testing.T) {
+	//setup configuration
+	configuration := config.New()
+	database := config.NewMysqlDatabase(configuration)
+
+	var roles = []model.Status{
+		{Name: "Menunggu Konfirmasi"},
+		{Name: "Reject by GS"},
+		{Name: "Diteruskan ke Accounting"},
+		{Name: "Rejected by AC"},
+		{Name: "Disetujui AC"},
+	}
+
+	err := database.Create(&roles).Error
+
+	if err != nil {
+		log.Println("Status Seed Failed")
+	}
+
+	log.Println("Status Seed Success")
 }
